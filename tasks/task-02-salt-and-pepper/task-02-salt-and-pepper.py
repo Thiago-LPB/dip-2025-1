@@ -7,14 +7,25 @@ def create_salt_and_pepper_noise(height=100, width=100, salt_prob=0.05, pepper_p
     equal to salt_prob and pepper_prob. Pixels without noise have values of 0.5.
     """
     ### START CODE HERE ###
-    # TODO
+    
+    img  = np.random.rand(height, width)
+    
+    for l in range(img.shape[0]):
+        for c in range(img.shape[1]):
+            if img[l][c] >= 0 and img[l][c] < salt_prob:
+                img[l][c] = 1.0
+            elif img[l][c] >= salt_prob and img[l][c] < salt_prob + pepper_prob:
+                img[l][c] = -1.0
+            else:
+                img[l][c] = 0.5
+                            
     ### END CODE HERE ###
     return img
 
 def main():
     
     img = create_salt_and_pepper_noise(100, 100, 0.1, 0.1)
-    
+    # print(img)
     salt_count = np.sum(img == 1.0)
     pepper_count = np.sum(img == -1.0)
     
