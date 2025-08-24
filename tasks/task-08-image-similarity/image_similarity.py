@@ -171,12 +171,6 @@ def _ssim(i1: np.ndarray, i2: np.ndarray, *, C1: float = 1e-8, C2: float = 1e-8)
         SSIM in approximately [-1, 1] (often near [0, 1] for natural images).
     """
     ### START CODE HERE ###
-    ### TODO
-    # ssim = ((2*i1.mean()*i2.mean() + C1) * (2*np.cov(i1.ravel(),i2.ravel(), bias=True)[0, 1] + C2))/((i1.mean()**2 + i2.mean()**2 + C1) * (np.var(i1)**2 + np.var(i2)**2 + C2))
-    ### END CODE HERE ###
-    #print(ssim)
-    # return ssim
-    print(i1.ravel())
     mean1 = i1.mean()
     mean2 = i2.mean()
     sigma12 = np.cov(i1.ravel(), i2.ravel(), bias=True)[0, 1]
@@ -209,7 +203,9 @@ def _npcc(i1: np.ndarray, i2: np.ndarray) -> float:
 
     ### START CODE HERE ###
     ### TODO
-    npcc = np.sum((i1 - i1.mean())*(i2 - i2.mean()))/(np.sqrt(np.sum((i1 - i1.mean())**2))*np.sqrt(np.sum((i2 - i2.mean())**2)))
+    m1 = i1.mean()
+    m2 = i2.mean()
+    npcc = np.sum((i1 - m1)*(i2 - m2))/(np.sqrt(np.sum((i1 - m1)**2))*np.sqrt(np.sum((i2 - m2)**2)))
     
     ### END CODE HERE ###
 
