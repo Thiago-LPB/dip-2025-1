@@ -34,11 +34,24 @@ def load_image_from_url(url: str, flags: int = cv.IMREAD_COLOR) -> np.ndarray:
     """
     try:
         ### START CODE HERE ###
-        ### TODO
-        image = None
-        ### END CODE HERE ###
+        req = urllib.request.Request(
+            url,
+            headers={
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:142.0) Gecko/20100101 Firefox/142.0"
+            }
+        )
+
+        with urllib.request.urlopen(req) as res:
+            arr = np.asarray(bytearray(res.read()), dtype="uint8")
+
+        image = cv.imdecode(arr, flags)
+
+        if image is None:
+            raise RuntimeError("OpenCV Decode Error")
 
         return image
+        ### END CODE HERE ###
+
 
     except Exception as e:
         raise RuntimeError(f"[ERROR] Could not load image from URL '{url}': {e}") from e

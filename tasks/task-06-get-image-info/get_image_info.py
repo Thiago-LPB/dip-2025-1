@@ -11,7 +11,7 @@ def get_image_info(image):
     ----------
     image : numpy.ndarray
         Input image (grayscale or color).
-
+You will implement missing parts of the code inside the function get_image_info.
     Returns
     -------
     dict
@@ -40,32 +40,33 @@ def get_image_info(image):
     # Handle grayscale vs multi-channel separately
     if depth == 1:
         # Single-channel
-        info["statistics"]["min"] = None
-        info["statistics"]["max"] = None
-        info["statistics"]["mean"] = None
-        info["statistics"]["std_dev"] = None
-        info["statistics"]["median"] = None
-        hist, bins = np.histogram(image, bins=256, range=(0, 256))
+        info["statistics"]["min"] = np.amin(image)
+        info["statistics"]["max"] = np.amax(image)
+        info["statistics"]["mean"] = np.mean(image)
+        info["statistics"]["std_dev"] = np.std(image)
+        info["statistics"]["median"] = np.median(image)
+        hist, _ = np.histogram(image, bins=256, range=(0, 256))
         info["statistics"]["histogram"] = hist.tolist()
     else:
         # Multi-channel: compute per channel
         channels = cv2.split(image)
         for idx, ch in enumerate(channels):
             ch_stats = {
-                "min": None,
-                "max": None,
-                "mean": None,
-                "std_dev": None,
-                "median": None,
+                "min": ch.min(),
+                "max": ch.max(),
+                "mean": ch.mean(),
+                "std_dev": ch.std(),
+                "median": np.median(ch.tolist())
             }
-            hist, bins = np.histogram(ch, bins=256, range=(0, 256))
+            # st = np.sort(ch.flatten())
+            # median = st[int(len(st)/2) + 1] if st.shape[0]%2 == 1 else np.mean([st[int(len(st)/2) + 1], st[int(len(st)/2)]])
+
+            hist, _ = np.histogram(ch, bins=256, range=(0, 256))
             ch_stats["histogram"] = hist.tolist()
             info["statistics"][f"channel_{idx}"] = ch_stats
     ### END CODE HERE ###
 
     return info
-
-
 # ===============================
 # ====== TEST EXAMPLES ==========
 # ===============================
