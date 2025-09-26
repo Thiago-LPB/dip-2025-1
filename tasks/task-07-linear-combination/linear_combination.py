@@ -27,7 +27,6 @@ def linear_combination(i1: np.ndarray, i2: np.ndarray, a1: float, a2: float) -> 
     ### TODO
     i_out = cv.addWeighted(i1, a1, i2, a2, 0)
     # i_out = (i1*a1 + i2*a2).astype(np.uint8)
-    # i_out = np.clip(i_out, 0,255).astype(np.uint8)
     ### END CODE HERE ###
     return i_out
 
