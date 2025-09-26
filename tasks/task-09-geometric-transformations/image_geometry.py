@@ -1,45 +1,53 @@
 import numpy as np
 
 def apply_geometric_transformations(img: np.ndarray) -> dict:
-    h, w = img.shape
-    
-    shift_y, shift_x = 20, 20  
-    translated = np.zeros_like(img)
-    translated[shift_y:, shift_x:] = img[:h-shift_y, :w-shift_x]
-    
-    rotated = np.transpose(img[::-1, :])
-    
-    new_w = int(w * 1.5)
-    stretched = np.zeros((h, new_w), dtype=img.dtype)
-    x_coords = (np.arange(new_w) / 1.5).astype(int)
-    x_coords = np.clip(x_coords, 0, w-1)
-    stretched[:, :] = img[:, x_coords]
-    
-    mirrored = img[:, ::-1]
-    
-    distorted = np.zeros_like(img)
-    y, x = np.indices((h, w))
-    x_norm = (2 * x / w) - 1
-    y_norm = (2 * y / h) - 1
-    r = np.sqrt(x_norm**2 + y_norm**2)
-    
-    k = 0.3  
-    r_distorted = r * (1 + k * (r**2))
-    
-    theta = np.arctan2(y_norm, x_norm)
-    x_new = r_distorted * np.cos(theta)
-    y_new = r_distorted * np.sin(theta)
+    linhas, colunas = img.shape
 
-    x_mapped = ((x_new + 1) * w / 2).astype(int)
-    y_mapped = ((y_new + 1) * h / 2).astype(int)
-    
-    valid = (x_mapped >= 0) & (x_mapped < w) & (y_mapped >= 0) & (y_mapped < h)
-    distorted[y[valid], x[valid]] = img[y_mapped[valid], x_mapped[valid]]
-    
+    # 1) Translação (deslocar p/ baixo e p/ direita)
+    dy, dx = 15, 15
+    trans = np.zeros_like(img)
+    trans[dy:, dx:] = img[:linhas-dy, :colunas-dx]
+
+    # 2) Rotação 90° sentido horário
+    rot = np.zeros((colunas, linhas), dtype=img.dtype)
+    for i in range(linhas):
+        for j in range(colunas):
+            rot[j, linhas-1-i] = img[i, j]
+
+    # 3) Esticar na horizontal (1.5x)
+    nova_col = int(colunas * 1.5)
+    stretch = np.zeros((linhas, nova_col), dtype=img.dtype)
+    for j in range(nova_col):
+        orig_j = int(j / 1.5)
+        stretch[:, j] = img[:, orig_j]
+
+    # 4) Espelhamento horizontal
+    mirror = img[:, ::-1]
+
+    # 5) Distorção
+    dist = np.zeros_like(img)
+    yy, xx = np.indices((linhas, colunas))
+    xn = (2 * xx / colunas) - 1
+    yn = (2 * yy / linhas) - 1
+    raio = np.sqrt(xn**2 + yn**2)
+
+    k = 0.25
+    raio2 = raio * (1 + k * raio**2)
+
+    ang = np.arctan2(yn, xn)
+    xn2 = raio2 * np.cos(ang)
+    yn2 = raio2 * np.sin(ang)
+
+    x_map = ((xn2 + 1) * colunas / 2).astype(int)
+    y_map = ((yn2 + 1) * linhas / 2).astype(int)
+
+    dentro = (x_map >= 0) & (x_map < colunas) & (y_map >= 0) & (y_map < linhas)
+    dist[yy[dentro], xx[dentro]] = img[y_map[dentro], x_map[dentro]]
+
     return {
-        "translated": translated,
-        "rotated": rotated,
-        "stretched": stretched,
-        "mirrored": mirrored,
-        "distorted": distorted
+        "translated": trans,
+        "rotated": rot,
+        "stretched": stretch,
+        "mirrored": mirror,
+        "distorted": dist
     }

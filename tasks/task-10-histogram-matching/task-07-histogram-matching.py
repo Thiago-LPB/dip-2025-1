@@ -26,12 +26,12 @@ Notes:
 
 import cv2 as cv
 import numpy as np
-import scikitimage as ski
+import skimage as ski
 
 def match_histograms_rgb(source_img: np.ndarray, reference_img: np.ndarray) -> np.ndarray:
     # Your implementation here
 
-    matched = exposure.match_histograms(source_img, reference_img, channel_axis=-1)
+    matched = ski.exposure.match_histograms(source_img, reference_img, channel_axis=-1)
 
     # Converte para uint8 (0–255)
     matched = np.clip(matched, 0, 255).astype(np.uint8)
